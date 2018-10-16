@@ -3,9 +3,9 @@ const { gql } = require("apollo-server-express");
 const { makeExecutableSchema } = require("graphql-tools");
 const fs = require("fs");
 
-const getAllUsers = () => JSON.parse(
-  fs.readFileSync("graphql_demos/socialNetwork/data.json", 'utf8')
-).users
+const getAllUsers = () =>
+  JSON.parse(fs.readFileSync("graphql_demos/socialNetwork/data.json", "utf8"))
+    .users;
 
 const getUserById = queryId =>
   getAllUsers().filter(({ id }) => id === Number(queryId));
@@ -18,7 +18,7 @@ const writeUsersToDisk = users =>
 
 const resolveUser = (_, { id: queryId }) => {
   return getUserById(queryId).map(({ id, name, age, friends }) => ({
-    id: () => id,
+    id: () => Number(id),
     name: () => name,
     age: () => Number(age),
     friends: ({ id: queryFriendId }) =>
@@ -28,6 +28,10 @@ const resolveUser = (_, { id: queryId }) => {
             .map(friendId => resolveUser(_, { id: friendId }))
         : friends.map(friendId => resolveUser(_, { id: friendId }))
   }))[0];
+};
+
+const resolveUsers = _ => {
+  return getAllUsers().map(({ id }) => resolveUser(_, { id }));
 };
 
 const newUser = (_, { userData: { name, age } }) => {
@@ -44,7 +48,7 @@ const newUser = (_, { userData: { name, age } }) => {
   writeUsersToDisk(allUser.concat(newUser));
   return resolveUser(_, {
     id: newUser.id
-  })
+  });
 };
 
 const newFriendship = (_, { uid1, uid2 }) => {
@@ -55,10 +59,10 @@ const newFriendship = (_, { uid1, uid2 }) => {
     tempUser2.friends = uniq([...tempUser2.friends, Number(uid1)]);
     writeUsersToDisk(
       [tempUser1, tempUser2].reduce((users, user, i) => {
-        const currentUser = users.find(({id}) => id === user.id)
-        const currentUserIndex = users.indexOf(currentUser)
-        const chunk1 = users.slice(0, currentUserIndex)
-        const chunk2 = users.slice(currentUserIndex+1, users.length)
+        const currentUser = users.find(({ id }) => id === user.id);
+        const currentUserIndex = users.indexOf(currentUser);
+        const chunk1 = users.slice(0, currentUserIndex);
+        const chunk2 = users.slice(currentUserIndex + 1, users.length);
         return [...chunk1, user, ...chunk2];
       }, getAllUsers())
     );
@@ -100,6 +104,7 @@ module.exports = makeExecutableSchema({
 
     type Query {
       user(id: ID!): User
+      users: [User]
     }
 
     type Mutation {
@@ -109,7 +114,8 @@ module.exports = makeExecutableSchema({
   `,
   resolvers: {
     Query: {
-      user: resolveUser
+      user: resolveUser,
+      users: resolveUsers
     },
     Mutation: {
       newUser: newUser,
