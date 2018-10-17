@@ -1,0 +1,7 @@
+{
+  "extensions": {
+    "endpoints": {
+      "dev": "http://localhost:3000/socialNetwork/graphql"
+    }
+  }
+}
