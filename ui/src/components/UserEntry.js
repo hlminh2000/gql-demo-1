@@ -14,7 +14,7 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 
 import FriendAdder from "./FriendAdder";
 
-const StateContainer = ({ children }) => (
+const LocalStateContainer = ({ children }) => (
   <Component initialState={{ expanded: false, addingFriend: false }}>
     {({ state: { expanded, addingFriend }, setState }) => {
       const toggleExpanded = () => setState({ expanded: !expanded });
@@ -69,7 +69,7 @@ const UserEntry = withStyles(theme => ({
   return (
     <Query query={USER_QUERY} variables={{ userId }}>
       {({ loading, data: { user } = {} }) => (
-        <StateContainer>
+        <LocalStateContainer>
           {({ expanded, addingFriend, toggleExpanded, toggleAddingFriend }) => (
             <div>
               <Paper className={classes.paper}>
@@ -132,7 +132,7 @@ const UserEntry = withStyles(theme => ({
                   ))}
             </div>
           )}
-        </StateContainer>
+        </LocalStateContainer>
       )}
     </Query>
   );

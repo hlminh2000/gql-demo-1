@@ -6,6 +6,15 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import UserSelect from "./UserSelect";
 
+const LocalStateContainer = ({ children }) => (
+  <Component initialState={{ selectedUserId: 0 }}>
+    {({ state: { selectedUserId }, setState }) => {
+      const selectUserId = value => setState({ selectedUserId: value });
+      return children({ selectedUserId, selectUserId });
+    }}
+  </Component>
+);
+
 const FriendAdder = withStyles(theme => ({
   input: {
     width: "100%"
@@ -19,13 +28,13 @@ const FriendAdder = withStyles(theme => ({
       newFriendship(uid1: $uid1, uid2: $uid2) {
         user1 {
           id
-          friends{
+          friends {
             id
           }
         }
         user2 {
           id
-          friends{
+          friends {
             id
           }
         }
@@ -43,12 +52,12 @@ const FriendAdder = withStyles(theme => ({
             }
           });
         return (
-          <Component initialState={{ selectedUserId: 0 }}>
-            {({ state: { selectedUserId }, setState }) => (
+          <LocalStateContainer>
+            {({ selectedUserId, selectUserId }) => (
               <div className={classes.row}>
                 <UserSelect
                   selected={selectedUserId}
-                  onSelect={({ value }) => setState({ selectedUserId: value })}
+                  onSelect={({ value }) => selectUserId(value)}
                 />
                 <Button
                   variant="outlined"
@@ -62,7 +71,7 @@ const FriendAdder = withStyles(theme => ({
                 </Button>
               </div>
             )}
-          </Component>
+          </LocalStateContainer>
         );
       }}
     </Mutation>
