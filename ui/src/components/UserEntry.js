@@ -14,6 +14,24 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 
 import FriendAdder from "./FriendAdder";
 
+const StateContainer = ({ children }) => (
+  <Component initialState={{ expanded: false, addingFriend: false }}>
+    {({ state: { expanded, addingFriend }, setState }) => {
+      const toggleExpanded = () => setState({ expanded: !expanded });
+      const toggleAddingFriend = () =>
+        setState({
+          addingFriend: !addingFriend
+        });
+      return children({
+        expanded,
+        addingFriend,
+        toggleExpanded,
+        toggleAddingFriend
+      });
+    }}
+  </Component>
+);
+
 const UserEntry = withStyles(theme => ({
   indented: {
     paddingLeft: 40,
@@ -34,7 +52,7 @@ const UserEntry = withStyles(theme => ({
   avatar: {
     backgroundColor: deepOrange[500]
   }
-}))(({ userId, classes }) => {
+}))(({ classes, userId }) => {
   const USER_QUERY = gql`
     query($userId: ID!) {
       user(id: $userId) {
@@ -51,8 +69,8 @@ const UserEntry = withStyles(theme => ({
   return (
     <Query query={USER_QUERY} variables={{ userId }}>
       {({ loading, data: { user } = {} }) => (
-        <Component initialState={{ expanded: false, addingFriend: false }}>
-          {({ state: { expanded, addingFriend }, setState }) => (
+        <StateContainer>
+          {({ expanded, addingFriend, toggleExpanded, toggleAddingFriend }) => (
             <div>
               <Paper className={classes.paper}>
                 {loading ? (
@@ -63,7 +81,9 @@ const UserEntry = withStyles(theme => ({
                       <Avatar className={classes.avatar}>{user.name[0]}</Avatar>
                     </Grid>
                     <Grid item xs zeroMinWidth>
-                      <Typography noWrap variant="h5">{user.name}</Typography>
+                      <Typography noWrap variant="h5">
+                        {user.name}
+                      </Typography>
                       <Typography noWrap>{user.age} years old</Typography>
                       <Typography noWrap>
                         {expanded
@@ -78,17 +98,13 @@ const UserEntry = withStyles(theme => ({
                         <Button
                           variant="outlined"
                           color="primary"
-                          onClick={() =>
-                            setState({
-                              addingFriend: !addingFriend
-                            })
-                          }
+                          onClick={() => toggleAddingFriend()}
                         >
                           Add friend
                         </Button>
                       )}
                     </Grid>
-                    <Grid onClick={() => setState({ expanded: !expanded })}>
+                    <Grid onClick={() => toggleExpanded()}>
                       {expanded ? <ExpandMore /> : <ExpandLess />}
                     </Grid>
                   </Grid>
@@ -96,11 +112,7 @@ const UserEntry = withStyles(theme => ({
                 {addingFriend ? (
                   <FriendAdder
                     baseUserId={userId}
-                    onCancel={() =>
-                      setState({
-                        addingFriend: false
-                      })
-                    }
+                    onCancel={() => toggleAddingFriend()}
                   />
                 ) : null}
               </Paper>
@@ -108,12 +120,19 @@ const UserEntry = withStyles(theme => ({
                 ? null
                 : user.friends.map(({ id }) => (
                     <div className={classes.indented} key={id}>
-                      <UserEntry userId={id} />
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => console.log("yooo!!!!")}
+                        >
+                          Remove
+                        </Button>
+                      <UserEntry userId={id}/>
                     </div>
                   ))}
             </div>
           )}
-        </Component>
+        </StateContainer>
       )}
     </Query>
   );
