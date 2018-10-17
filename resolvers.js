@@ -1,20 +1,9 @@
 const { uniq, maxBy } = require("lodash");
-const { gql } = require("apollo-server-express");
-const { makeExecutableSchema } = require("graphql-tools");
-const fs = require("fs");
-
-const getAllUsers = () =>
-  JSON.parse(fs.readFileSync("graphql_demos/socialNetwork/data.json", "utf8"))
-    .users;
-
-const getUserById = queryId =>
-  getAllUsers().filter(({ id }) => id === Number(queryId));
-
-const writeUsersToDisk = users =>
-  fs.writeFileSync(
-    "graphql_demos/socialNetwork/data.json",
-    JSON.stringify({ users }, null, 2)
-  );
+const {
+  getAllUsers,
+  getUserById,
+  writeUsersToDisk,
+} = require('./ioUtils')
 
 const resolveUser = (_, { id: queryId }) => {
   return getUserById(queryId).map(({ id, name, age, friends }) => ({
@@ -79,47 +68,13 @@ const newFriendship = (_, { uid1, uid2 }) => {
   }
 };
 
-module.exports = makeExecutableSchema({
-  typeDefs: gql`
-    interface Entity {
-      id: ID!
-    }
-
-    type User implements Entity {
-      id: ID!
-      name: String!
-      age: Int!
-      friends: [User]
-    }
-
-    type FriendShip {
-      user1: User
-      user2: User
-    }
-
-    input UserInput {
-      name: String!
-      age: Int!
-    }
-
-    type Query {
-      user(id: ID!): User
-      users: [User]
-    }
-
-    type Mutation {
-      newUser(userData: UserInput): User
-      newFriendship(uid1: ID!, uid2: ID!): FriendShip
-    }
-  `,
-  resolvers: {
-    Query: {
-      user: resolveUser,
-      users: resolveUsers
-    },
-    Mutation: {
-      newUser: newUser,
-      newFriendship: newFriendship
-    }
+module.exports = {
+  Query: {
+    user: resolveUser,
+    users: resolveUsers
+  },
+  Mutation: {
+    newUser: newUser,
+    newFriendship: newFriendship
   }
-});
+}

@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alex",
+      "age": 2,
+      "friends": [
+        4,
+        3,
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Rahul",
+      "age": 3,
+      "friends": [
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Dusan",
+      "age": 1,
+      "friends": [
+        1,
+        3
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Ann",
+      "age": 4,
+      "friends": [
+        1
+      ]
+    }
+  ]
+}
