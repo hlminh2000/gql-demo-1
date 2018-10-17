@@ -1,22 +1,34 @@
 const PORT = process.env.PORT || 4000;
 const express = require("express");
-const bodyParser = require("body-parser");
 const { ApolloServer } = require('apollo-server-express');
-const cors = require("cors");
 const { makeExecutableSchema } = require("graphql-tools");
+const fs = require('fs');
 
 const resolvers = require(`./resolvers`);
 const typeDefs = require('./typeDefs');
 const schema = makeExecutableSchema({ resolvers, typeDefs})
 
-const app = express();
-app.use(cors(), bodyParser.json(), bodyParser.urlencoded({ extended: false }));
+const initUserStore = () => {
+  const initialUserStore = {
+    users: []
+  }
+  fs.writeFileSync("./data.json", JSON.stringify(initialUserStore, null, 2));
+}
 
-const server = new ApolloServer({ schema })
-server.applyMiddleware({ app, path: `/graphql` })
+const init = () => {  
+  if (!fs.existsSync('./data.json')) {
+    initUserStore()
+  }
+  
+  const app = express();
+  const server = new ApolloServer({ schema })
+  server.applyMiddleware({ app, path: `/graphql` })
+  
+  app.listen(PORT, () => {
+    console.log("===============================================");
+    console.log(`| graphql:  http://localhost:${PORT}/graphql`);
+    console.log("===============================================");
+  });
+}
 
-app.listen(PORT, () => {
-  console.log("===============================================");
-  console.log(`| graphql:  http://localhost:${PORT}/graphql`);
-  console.log("===============================================");
-});
+init()
