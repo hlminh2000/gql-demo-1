@@ -10,9 +10,9 @@ const resolveUser = (_, { id: queryId }) => {
     id: () => Number(id),
     name: () => name,
     age: () => Number(age),
-    friends: (_) => friends
-      .filter(friendId => friendId === queryFriendId)
-      .map(friendId => resolveUser(_, { id: friendId }))
+    friends: _ =>
+      friends
+        .map(friendId => resolveUser(_, { id: friendId }))
   }))[0];
 };
 
