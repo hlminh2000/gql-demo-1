@@ -16,3 +16,7 @@ There are two components to this repo: API and UI
 
 ### Challenge exercise:
 - Make the remove buttons work
+- Steps:
+    1. Create new Mutation in schema typedefs in `api/typeDefs.js`
+    2. Write resolver for the new mutation in `api/resolvers.js`
+    3. Create a new component that triggers the mutation in `ui/src/components/UserEntry.js`
