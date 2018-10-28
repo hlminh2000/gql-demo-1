@@ -1,6 +1,6 @@
 # Graphql Demo
 
-This is a demo of what a graphql application looks like. 
+This is a demo of what a graphql application looks like. Check out slides.pdf for some overview of graphql
 
 There are two components to this repo: API and UI
 
