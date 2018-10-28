@@ -13,3 +13,6 @@ There are two components to this repo: API and UI
 - This is the UI, built with React and Apollo Client
 - Running the ui: from the root of this repo, run `cd ./ui && npm i && npm start`
 - The UI should be accessible through your browser at `http://localhost:3000`
+
+### Challenge exercise:
+- Make the remove buttons work
